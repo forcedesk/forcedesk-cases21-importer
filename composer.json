@@ -3,12 +3,27 @@
     "description": "Imports Staff Data from CASES21 into the User Database.",
     "type": "library",
     "require": {
-        "php": "^8.2"
+        "php": ">=8.2",
+        "laravel/framework": "^10.0",
+        "illuminate/support": "^10.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "^8.0|^9.0|^10.0",
+        "orchestra/testbench": "^6.0|^7.0|^8.0",
+        "laravel/pint": "^1.9"
     },
     "license": "Closed Source",
     "autoload": {
         "psr-4": {
             "Schooldesk\\Cases21Importer\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Schooldesk\\Cases21Importer\\ImportServiceProvider"
+            ]
         }
     },
     "authors": [
