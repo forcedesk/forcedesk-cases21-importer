@@ -1,0 +1,19 @@
+{
+    "name": "schooldesk/cases21-importer",
+    "description": "Imports Staff Data from CASES21 into the User Database.",
+    "type": "library",
+    "require": {
+        "php": "^8.2"
+    },
+    "license": "Closed Source",
+    "autoload": {
+        "psr-4": {
+            "Schooldesk\\Cases21Importer\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Excelion Pty Ltd"
+        }
+    ]
+}
