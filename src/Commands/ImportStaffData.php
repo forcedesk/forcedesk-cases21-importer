@@ -52,7 +52,7 @@ class ImportStaffData extends Command
             return false;
         }
 
-        $directory = array_filter(Storage::disk('dataimport')->files(), function ($item) {
+        $directory = array_filter(Storage::disk('importers')->files(), function ($item) {
             return strpos($item, '.csv');
         });
 
@@ -69,13 +69,13 @@ class ImportStaffData extends Command
 
         $importfile = select(label: 'Which CASES21 Staff File do you want to import?', options: $files);
 
-        $csvFile = fopen(Storage::disk('dataimport')->path($importfile), 'r');
+        $csvFile = fopen(Storage::disk('importers')->path($importfile), 'r');
         $firstline = true;
         $importcount = 0;
 
         /* Grab the row count, so we can pass it to the progress bar */
         $rowCount = 0;
-        if (($fp = fopen(Storage::disk('dataimport')->path($importfile), "r")) !== FALSE) {
+        if (($fp = fopen(Storage::disk('importers')->path($importfile), "r")) !== FALSE) {
             while(!feof($fp)) {
                 $data = fgetcsv($fp , 0 , ',' , '"', '"' );
                 if(empty($data)) continue; //empty row
@@ -90,7 +90,7 @@ class ImportStaffData extends Command
             return false;
         }
 
-        if( strpos(file_get_contents(Storage::disk('dataimport')->path($importfile)),'SFKEY') == false && strpos(file_get_contents(Storage::disk('dataimport')->path($importfile)),'FACULTY_01') == false) {
+        if( strpos(file_get_contents(Storage::disk('importers')->path($importfile)),'SFKEY') == false && strpos(file_get_contents(Storage::disk('importers')->path($importfile)),'FACULTY_01') == false) {
             // do stuff
         }
 
