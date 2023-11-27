@@ -13,7 +13,7 @@
         "orchestra/testbench": "^6.0|^7.0|^8.0",
         "laravel/pint": "^1.9"
     },
-    "license": "Closed Source",
+    "license": "proprietary",
     "autoload": {
         "psr-4": {
             "Schooldesk\\Cases21Importer\\": "src/"
