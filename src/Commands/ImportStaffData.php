@@ -1,6 +1,6 @@
 <?php
 
-namespace Schooldesk\Cases21Importer\Commands;
+namespace SchoolDesk\Cases21Importer\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -8,10 +8,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Str;
 use function Laravel\Prompts\alert;
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\note;
 use function Laravel\Prompts\progress;
 use function Laravel\Prompts\select;
+use function Laravel\Prompts\spin;
 
 class ImportStaffData extends Command
 {
@@ -52,14 +55,19 @@ class ImportStaffData extends Command
             return false;
         }
 
-        $directory = array_filter(Storage::disk('importers')->files(), function ($item) {
+        $datadir = spin(
+            fn () => Storage::disk('importers')->files(),
+            'Parsing Import Directory...'
+        );
+
+        $directory = array_filter($datadir, function ($item) {
             return strpos($item, '.csv');
         });
 
         $files = [];
 
         foreach ($directory as $file => $filename) {
-            $files[$filename] = $filename;
+            $files[$filename] = $filename.' (Modified: '.date ("F d Y H:i:s", filemtime(Storage::disk('importers')->path($filename))).')';
         }
 
         if (empty($files)) {
@@ -67,21 +75,24 @@ class ImportStaffData extends Command
             return false;
         }
 
-        $importfile = select(label: 'Which CASES21 Staff File do you want to import?', options: $files);
+        $importfile = select(label: 'Which CASES21 Staff File do you want to import?', options: $files, scroll: 50);
 
         $csvFile = fopen(Storage::disk('importers')->path($importfile), 'r');
         $firstline = true;
         $importcount = 0;
+        $newcount = 0;
+        $updatedcount = 0;
+        $updatedlist = [];
+        $newlist = [];
 
         /* Grab the row count, so we can pass it to the progress bar */
         $rowCount = 0;
-        if (($fp = fopen(Storage::disk('importers')->path($importfile), "r")) !== FALSE) {
-            while(!feof($fp)) {
-                $data = fgetcsv($fp , 0 , ',' , '"', '"' );
-                if(empty($data)) continue; //empty row
+        if ($csvFile !== FALSE) {
+            while(!feof($csvFile)) {
+                $rowdata = fgetcsv($csvFile , 0 , ',' , '"', '"' );
+                if(empty($rowdata)) continue; //empty row
                 $rowCount++;
             }
-            fclose($fp);
         }
 
         if($rowCount == '0')
@@ -90,14 +101,23 @@ class ImportStaffData extends Command
             return false;
         }
 
-        if( strpos(file_get_contents(Storage::disk('importers')->path($importfile)),'SFKEY') == false && strpos(file_get_contents(Storage::disk('importers')->path($importfile)),'FACULTY_01') == false) {
-            // do stuff
+        if(!strpos(file_get_contents(Storage::disk('importers')->path($importfile)), 'SFKEY')) {
+            error('Not a valid CASES21 Staff File. Does not contain the SFKEY column or is the wrong type of file.');
+            return false;
         }
 
-        $progress = progress(label: 'Processing accounts', steps: $rowCount);
+        $confirmimport = confirm(label: 'Do you wish to process this import?', default: false);
+
+        if (!$confirmimport) {
+            error('Aborted import.');
+            return false;
+        }
+
+        $progress = progress(label: 'Searching for Active Staff Records. Please wait....', steps: $rowCount);
         $progress->start();
 
         try {
+            $csvFile = fopen(Storage::disk('importers')->path($importfile), 'r');
             while (($data = fgetcsv($csvFile, 2000, ',')) !== false) {
                 if (!$firstline) {
 
@@ -116,12 +136,19 @@ class ImportStaffData extends Command
                         if(!$user)
                         {
                             $user = new User;
+                            $user->name = $firstname . ' ' . $surname;
+                            $user->email = $email;
+                            $user->staff_code = $emplid;
                             $user->password = Hash::make(Str::random(16));
+                            $newcount++;
+                            $newlist[] = $user->name;
+                        } else {
+                            $user->name = $firstname . ' ' . $surname;
+                            $user->email = $email;
+                            $user->staff_code = $emplid;
+                            $updatedcount++;
+                            $updatedlist[] = $user->name;
                         }
-
-                        $user->name = $firstname . ' ' . $surname;
-                        $user->email = $email;
-                        $user->staff_code = $emplid;
 
                         $user->assignRole('Helpdesk User');
                         $user->save();
@@ -144,7 +171,28 @@ class ImportStaffData extends Command
 
         $progress->finish();
 
-        info('Staff data was successfully processed from CASES21. Processed ' . $importcount . ' total records.');
+        if(!empty($updatedlist))
+        {
+            note('Updated Records');
+
+            foreach($updatedlist as $updated)
+            {
+                $this->info('Updated existing record for '.$updated);
+            }
+        }
+
+        if(!empty($newlist))
+        {
+            note('Created Records');
+
+            foreach($newlist as $new)
+            {
+                $this->info('Created new record for '.$new);
+            }
+        }
+
+
+        info('Staff data was successfully processed from CASES21. Processed ' . $importcount . ' total active records out of '.$rowCount.': ('.$newcount.' new, '.$updatedcount.' updated.)');
 
         return true;
     }
