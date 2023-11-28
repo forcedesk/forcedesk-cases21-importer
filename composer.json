@@ -2,6 +2,8 @@
     "name": "schooldesk/cases21-importer",
     "description": "Imports Staff Data from CASES21 into the User Database.",
     "type": "library",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "require": {
         "php": ">=8.2",
         "laravel/framework": "^10.0",
@@ -30,7 +32,5 @@
         {
             "name": "Excelion Pty Ltd"
         }
-    ],
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    ]
 }
