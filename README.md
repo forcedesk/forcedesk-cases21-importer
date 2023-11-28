@@ -1,7 +1,7 @@
 
 # SchoolDesk CASES21 Importer
 
-Imports Staff from a CASES21 Delta Export file and creates SchoolDesk accounts.
+Imports Staff from a CASES21 Export file and creates SchoolDesk accounts.
 
 Existing accounts matching incoming records are updated. No accounts are deleted, these must be done manually.
 
@@ -15,11 +15,15 @@ composer require schooldesk/cases21-importer
 
 ## Usage/Examples
 
-Place a CASES21 Delta Export file in your ```storage/app/importers``` directory.
+Place a CASES21 Export file in your ```storage/app/importers``` directory.
 
-Run the following command and follow the steps to process the Delta file and create/update accounts.
+**EG:** ```storage/app/importers/SF_XXXX.csv``` where `XXXX` is your School Code.
+
+Then run the following command and follow the steps to process the file and create/update accounts.
 
 ```php artisan importers:cases21-importer```
+
+Only records having a `STAFF_STATUS` of `ACTV` with ```PAYROLL_REC_NO``` and ```EMAIL``` fields defined will be imported, any other rows will be ignored.
 
 ## Support
 
