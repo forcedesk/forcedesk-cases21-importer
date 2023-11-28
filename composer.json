@@ -30,5 +30,7 @@
         {
             "name": "Excelion Pty Ltd"
         }
-    ]
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
