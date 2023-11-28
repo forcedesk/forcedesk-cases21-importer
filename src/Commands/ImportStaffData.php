@@ -63,7 +63,7 @@ class ImportStaffData extends Command
         }
 
         if (empty($files)) {
-            alert('There are no CASES21 import files available. Check your Eduhub configuration.');
+            alert('Could not find any import files. Check that you have placed the appropriate CSV in the "storage/app/importers" folder.');
             return false;
         }
 
