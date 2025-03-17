@@ -1,5 +1,5 @@
 {
-    "name": "schooldesk/cases21-importer",
+    "name": "forcedesk/cases21-importer",
     "description": "Imports Staff Data from CASES21 into the User Database.",
     "type": "library",
     "minimum-stability": "stable",
@@ -18,19 +18,19 @@
     "license": "proprietary",
     "autoload": {
         "psr-4": {
-            "Schooldesk\\Cases21Importer\\": "src/"
+            "ForceDesk\\Cases21Importer\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Schooldesk\\Cases21Importer\\ImportServiceProvider"
+                "ForceDesk\\Cases21Importer\\ImportServiceProvider"
             ]
         }
     },
     "authors": [
         {
-            "name": "Excelion Pty Ltd"
+            "name": "ForcePoint Software"
         }
     ]
 }
