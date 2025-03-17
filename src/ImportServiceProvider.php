@@ -1,9 +1,9 @@
 <?php
 
-namespace Schooldesk\Cases21Importer;
+namespace ForceDesk\Cases21Importer;
 
 use Illuminate\Support\ServiceProvider;
-use Schooldesk\Cases21Importer\Commands\ImportStaffData;
+use ForceDesk\Cases21Importer\Commands\ImportStaffData;
 
 class ImportServiceProvider extends ServiceProvider
 {
