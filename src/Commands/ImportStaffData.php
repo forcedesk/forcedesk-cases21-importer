@@ -1,6 +1,6 @@
 <?php
 
-namespace SchoolDesk\Cases21Importer\Commands;
+namespace ForceDesk\Cases21Importer\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
